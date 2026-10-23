@@ -32,6 +32,11 @@
             "description": "Voice typing status"
           },
           {
+            "value": "Speech",
+            "label": "Text to speech",
+            "description": "Utter reading aloud"
+          },
+          {
             "value": "ScreenRecording",
             "label": "Screen recording",
             "description": "GPU screen recorder status"

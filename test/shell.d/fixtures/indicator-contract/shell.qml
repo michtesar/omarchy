@@ -208,6 +208,18 @@ ShellRoot {
         root.assertTrue(root.commandCount("omarchy-voxtype-model") === 0, "Dictation clicks do not run model command")
       }
 
+      var speech = root.createIndicator("Speech")
+      if (speech) {
+        speech.moduleName = "Speech"
+        root.injectBar(speech)
+        speech.triggerPress(Qt.LeftButton)
+        root.assertTrue(root.commandCount("omarchy-utter-doctor") === 1, "Speech left click opens the doctor when idle")
+        speech.state = "speaking"
+        root.assertTrue(speech.active === true, "Speech is active while speaking")
+        speech.triggerPress(Qt.LeftButton)
+        root.assertTrue(root.commandCount("omarchy-utter-stop") === 1, "Speech left click stops active speech")
+      }
+
       var stayAwake = root.createIndicator("StayAwake")
       if (stayAwake) {
         stayAwake.moduleName = "StayAwake"
