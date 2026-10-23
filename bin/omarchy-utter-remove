@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# omarchy:summary=Remove Utter text to speech
+# omarchy:requires-sudo=true
+
+set -e
+
+# Remove Utter. Downloaded voices and the configuration stay for a reinstall.
+
+if omarchy-cmd-present utter; then
+  echo "Uninstall Utter to remove text to speech."
+
+  utter --stop || true
+  systemctl --user disable --now utterd.socket utterd.service 2>/dev/null || true
+  omarchy-pkg-drop utter
+  systemctl --user daemon-reload
+
+  hyprctl reload >/dev/null
+  omarchy-restart-shell
+else
+  echo "Utter was not installed."
+fi

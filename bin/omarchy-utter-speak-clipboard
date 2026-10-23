@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# omarchy:summary=Read the clipboard aloud, or stop reading when speaking
+
+wl-paste --no-newline 2>/dev/null | utter --toggle

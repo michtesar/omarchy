@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# omarchy:summary=Stop Utter reading aloud
+
+utter --stop

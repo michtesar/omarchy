@@ -1,0 +1,22 @@
+#!/bin/bash
+
+# omarchy:summary=Install and configure Utter text to speech
+# omarchy:requires-sudo=true
+
+set -e
+
+# Install Utter with its default voice and its socket-activated daemon.
+
+if gum confirm "Install Utter text to speech + English voice (~65MB)?"; then
+  omarchy-pkg-add utter
+
+  utter voices install en_US-lessac-medium
+  systemctl --user daemon-reload
+  systemctl --user enable --now utterd.socket
+  utter bench --apply
+
+  hyprctl reload >/dev/null
+  omarchy-restart-shell
+  utter --wait "Utter is ready. Select text and press Super Control U to hear it."
+  omarchy-notification-send -g 󰔊 "Utter Text to Speech Ready" "Select text and press Super + Ctrl + U (press again to stop)." -t 10000
+fi

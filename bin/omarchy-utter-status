@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# omarchy:summary=Stream Utter speaking state as bar-friendly JSON
+
+if omarchy-cmd-missing utter; then
+  echo '{"alt": "", "class": "idle", "tooltip": ""}'
+else
+  # Keep the status follower as the direct child of the bar. Quickshell cleans
+  # up its direct child when it restarts; a shell pipeline would leave the
+  # follower orphaned under the user systemd instance. The follower watches the
+  # daemon's state file, so it never starts the daemon or keeps it alive.
+  exec setpriv --pdeathsig TERM utter --events --bar
+fi

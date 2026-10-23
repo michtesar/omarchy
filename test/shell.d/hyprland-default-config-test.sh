@@ -175,6 +175,24 @@ if grep -Fq $'SUPER + CTRL + X	Toggle dictation' <<<"$missing_voxtype_output"; t
 fi
 pass "missing Voxtype skips dictation bindings"
 
+utter_home="$tmpdir/utter-home"
+utter_bin="$tmpdir/utter-bin"
+mkdir -p "$utter_home" "$utter_bin"
+touch "$utter_bin/utter"
+chmod +x "$utter_bin/utter"
+utter_output=$(PATH="$utter_bin:$PATH" run_omarchy_bindings "$utter_home")
+grep -Fq $'SUPER + CTRL + U	Speak selected text (press again to stop)' <<<"$utter_output" ||
+  fail "installed Utter enables its speak-selection binding"
+grep -Fq $'SUPER + CTRL + SHIFT + U	Speak clipboard (press again to stop)' <<<"$utter_output" ||
+  fail "installed Utter enables its speak-clipboard binding"
+pass "installed Utter conditionally enables text to speech bindings"
+
+missing_utter_output=$(PATH="$missing_bin" run_omarchy_bindings "$utter_home")
+if grep -Fq 'Speak selected text' <<<"$missing_utter_output"; then
+  fail "missing Utter skips its bindings"
+fi
+pass "missing Utter skips text to speech bindings"
+
 # The Grave shortcuts are aliases, so the original SUPER + S pair has to keep
 # working alongside them.
 scratchpad_home="$tmpdir/scratchpad-home"

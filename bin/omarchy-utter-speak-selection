@@ -1,0 +1,5 @@
+#!/bin/bash
+
+# omarchy:summary=Read the selected text aloud, or stop reading when speaking
+
+wl-paste --primary --no-newline 2>/dev/null | utter --toggle
