@@ -13,10 +13,12 @@ if gum confirm "Install Utter text to speech + English voice (~65MB)?"; then
   utter voices install en_US-lessac-medium
   systemctl --user daemon-reload
   systemctl --user enable --now utterd.socket
-  utter bench --apply
+  # A failed benchmark keeps the default voice; it must not stop the install.
+  utter bench --apply || echo "Benchmark failed; keeping the default voice. Run utter doctor to check the setup."
 
   hyprctl reload >/dev/null
   omarchy-restart-shell
-  utter --wait "Utter is ready. Select text and press Super Control U to hear it."
+  utter --wait "Utter is ready. Select text and press Super Control U to hear it." ||
+    echo "Utter could not speak yet. Run utter doctor to see why."
   omarchy-notification-send -g 󰔊 "Utter Text to Speech Ready" "Select text and press Super + Ctrl + U (press again to stop)." -t 10000
 fi
