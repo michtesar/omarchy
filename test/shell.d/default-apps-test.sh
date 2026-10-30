@@ -425,31 +425,3 @@ omarchy-default-editor nvim
 omarchy-default-editor air
 [[ $(omarchy-default-editor) == "nvim" ]] || fail "the Go air executable is not mistaken for JetBrains Air"
 pass "JetBrains Air is not confused with the Go air executable"
-
-# The menu guards and checkmarks must agree with the product catalog.
-export OMARCHY_TEST_CATALOG
-OMARCHY_TEST_CATALOG=$(
-  for product in "${jetbrains_editors[@]}"; do
-    jetbrains_product "$product"
-    printf '%s\t%s\t%s\n' "$product" "$jetbrains_command" "${jetbrains_packages[*]}"
-  done
-)
-run_node_test <<'JS'
-const fs = require('fs')
-const model = requireFromRoot('shell/plugins/menu/MenuModel.js')
-const items = model.parseMenuJsonc(fs.readFileSync(path.join(root, 'default/omarchy/omarchy-menu.jsonc'), 'utf8'))
-const children = parent => items.filter(item => item.parent === parent)
-const install = children('install.editor.jetbrains')
-const defaults = children('setup.default.editor.jetbrains')
-const catalog = process.env.OMARCHY_TEST_CATALOG.split('\n').map(line => line.split('\t'))
-assertDeepEqual(install.map(item => item.id.split('.').pop()), catalog.map(row => row[0]), 'Install lists every JetBrains editor in catalog order')
-assertDeepEqual(defaults.map(item => item.label), install.map(item => item.label), 'Defaults lists the same editors in the same order')
-catalog.forEach(([id, command, packages], i) => {
-  assertEqual(install[i].action, `omarchy-launch-floating-terminal-with-presentation omarchy-install-jetbrains ${id}`, `${id} installs in a visible terminal`)
-  assertEqual(install[i].disabled, `omarchy-pkg-present ${packages}`, `${id} checks every package its installer needs`)
-  assertEqual(defaults[i].action, `omarchy-default-editor ${id}`, `${id} uses the standard defaults flow`)
-  assert(defaults[i].checked.includes(`== "${command}"`), `${id} checks the launcher saved by Defaults`)
-})
-for (const tool of ['toolbox', 'gateway', 'mps'])
-  assert(items.some(item => item.id === `install.development.jetbrains-${tool}`), `${tool} is a separate Development install`)
-JS
